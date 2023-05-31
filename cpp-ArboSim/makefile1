@@ -1,0 +1,29 @@
+CXX = g++
+CXXFLAGS = -std=c++14 -Wall -Wextra -pedantic
+LDFLAGS =  -Ilibs/cxxopts-2.2.0/include/ -lstdc++fs -lcxxopts
+
+SRCDIR = ./
+OBJDIR = ./
+BINDIR = ./
+
+TARGET = drive_simulator
+
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
+OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+
+.PHONY: all clean
+
+all: $(BINDIR)/$(TARGET)
+
+$(BINDIR)/$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJDIR):
+	mkdir -p $@
+
+clean:
+	rm -rf $(OBJDIR) $(BINDIR)
+
