@@ -21,8 +21,10 @@ def SetinitialConditions(nt,centrality,degree,node_names,Nodes):
     return I
 
 input_path="../InputFiles/Senegal/"
+output_path="../OutputFiles/Senegal/"
 
 os.system('mkdir -p ' + input_path)
+os.system('mkdir -p ' + output_path)
 
 NetworkTypes=["SmallWorld","Random","ScaleFree","ScaleFreeConfigurationModel"]
 
@@ -30,7 +32,7 @@ NetworkTypes=["SmallWorld","Random","ScaleFree","ScaleFreeConfigurationModel"]
 Nodes=47
 k=4# average degree
 psm=0.1
-prn=0.3;
+prn=0.3
 m = 2
 seed=2
 degree={}
