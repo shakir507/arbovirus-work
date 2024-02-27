@@ -1,0 +1,3 @@
+,bet1,bet2,muV,Exposed,InitialInfections,Recovered,START_DAY,output_directory_base,input_directory,Nodes,NetworkName,NetworkFileHuman
+0,0.08002583511325868,0.20913579304908003,0.06382479930225841,54.23063616460445,57.325580795486,63.10167188250911,0,../outputdir/,../../InputFiles/Senegal/,47,Scalefree,NetworkFileHumanScaleFree.json
+1,0.13566242811227588,0.12036342428109348,0.06991576722678607,86.03387298387116,87.60001098447881,83.08853293836748,0,../outputdir/,../../InputFiles/Senegal/,47,Scalefree,NetworkFileHumanScaleFree.json

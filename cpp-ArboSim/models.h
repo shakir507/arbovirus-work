@@ -127,13 +127,14 @@ struct sys_para{
     int ntrans;
     count_type NUM_DAYS;
     count_type START_DAY;
-    
+    int SIM_STEPS_PER_DAY=1000;
+    count_type SIM_STEPS;
     double F_KERNEL_A;
     double F_KERNEL_B;
     double ep=0;
     double a;
     double a0;
-    double b=0.315;
+    double b=1;//0.315
     double c;
     double d;
     double tpi;
@@ -186,7 +187,10 @@ struct sys_para{
     int sN; 
     int networktypeH=0;
     int networktypeM=0;
-    
+    double Exposed=10;
+    double InitialInfections=100;
+    double Recovered=0;
+
     double h;
    
    std::string input_base;

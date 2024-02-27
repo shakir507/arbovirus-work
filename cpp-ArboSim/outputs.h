@@ -38,7 +38,7 @@ struct plot_data_struct{
   // std::map<std::string, timed_csv_data<count_type>> disease_label_stats;
   // std::map<std::string, timed_csv_data<int>> ward_wise_stats; // sk
   
-  // std::vector<std::string> logger1;
+  std::vector<std::string> logger1;
   // std::vector<std::string> logger2;//added by shakir for recording lat and lon for infected indiv
   // std::vector<std::string> logger3;//added by shakir for recording lat and lon for infected indiv
   // std::vector<std::string> logger4;//added by shakir for recording lat and lon for infected indiv

@@ -38,6 +38,44 @@ void getAvector();
 void getBvector();
 void writeMatrixToCSV(matrix<double>& matrix, const std::string& filename);
 
+// std::vector<int> generateRandomSequence(int totalSum, int sequenceLength) {
+//     std::random_device rd;
+//     std::mt19937 gen(rd());
+//     std::uniform_int_distribution<int> distribution(1, totalSum);
+
+//     std::vector<int> sequence(sequenceLength);
+//     int sum = 0;
+
+//     for (int i = 0; i < sequenceLength - 1; ++i) {
+//         sequence[i] = distribution(gen);
+//         sum += sequence[i];
+//     }
+
+//     sequence[sequenceLength - 1] = totalSum - sum;
+//     return sequence;
+// }
+std::vector<int> generateRandomSequence(int totalSum, int sequenceLength) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> distribution(0, totalSum/GLOBAL.Nodes);
+
+    std::vector<int> sequence(sequenceLength);
+
+    // Generate (sequenceLength - 1) random numbers
+    for (int i = 0; i < sequenceLength - 1; ++i) {
+        sequence[i] = distribution(gen);
+        // if(sequence[i]>1){
+        //     sequence[i]-=1;
+        // }
+        totalSum -= sequence[i];  // Reduce the remaining totalSum
+    }
+
+    // Ensure the last element is positive or zero
+    sequence[sequenceLength - 1] = std::max(0, totalSum);
+
+    return sequence;
+}
+
 matrix<double> identityMatrix(matrix<double>&adjMatrix ,int numNodes) {
      for (int i = 1; i <=numNodes; i++) {
         for (int j = 1; j <=numNodes; j++) {
@@ -274,16 +312,29 @@ void generateMosquitoNetwork(int networktype){
 }
 
 void init_states(vector<double>& y0){
-    int Nodes=GLOBAL.Nodes,I[Nodes+1];
+    int Nodes=GLOBAL.Nodes,E[Nodes+1],I[Nodes+1],R[Nodes+1];
+    double totalSumE = GLOBAL.Exposed,totalSumI = GLOBAL.InitialInfections,totalSumR = GLOBAL.Recovered;
+    int sequenceLength = GLOBAL.Nodes;
+
+    std::vector<int> randomSequenceE = generateRandomSequence(int(totalSumE), sequenceLength);
+    std::vector<int> randomSequenceI = generateRandomSequence(int(totalSumI), sequenceLength);
+    std::vector<int> randomSequenceR = generateRandomSequence(int(totalSumR), sequenceLength);
+    // for(int i=0;i<GLOBAL.Nodes;i++){
+    //   //std::cout<<i+1<<"\t"<<randomSequenceE[i]<<std::endl;
+    //   std::cout<<randomSequenceE[i]<<std::endl;
+
+    // }
     if(SEED_INFECTION_FROM_FILE){
     auto initialJson = readJSONFile(GLOBAL.input_base + "NetworkSeeding.json");//"individuals.json");
   auto size = initialJson.GetArray().Size();
         count_type i = 0;
         // count_type travellers=0;//---delete shakir after verifying travellers
         for (auto &elem: initialJson.GetArray()){
-            I[i+1] = elem["Infected"].GetInt();
-             GLOBAL.PIH[i+1]=elem["birthrate"].GetDouble();
+            E[i+1]=randomSequenceE[i];//Initial exposed
+            I[i+1] = randomSequenceI[i];//Iniital infectious//elem["Infected"].GetInt();//Iniital infectious
+            R[i+1]=randomSequenceR[i];//Initial recovered
 
+            GLOBAL.PIH[i+1]=elem["birthrate"].GetDouble();
             GLOBAL.R0[i+1]=elem["R0"].GetDouble();;
             GLOBAL.muM[i+1]=elem["MosquitoDeathRate"].GetDouble();;//---------vector death rate
 
@@ -292,17 +343,27 @@ void init_states(vector<double>& y0){
     }
     else{
     //Infection cases reported from each of these mukims
-    I[1]=15;
-    I[2]=16;
-    I[3]=18;
-    I[4]=28;
-    I[5]=10;
-    I[6]=34;
-    I[7]=31;
-    I[8]=25;
-    I[9]=30;
-    I[10]=57;
-    I[11]=14;
+
+
+    for(int i=0;i<GLOBAL.Nodes;i++)
+    {
+        E[i+1]=randomSequenceE[i];//Initial exposed
+        I[i+1]=randomSequenceI[i];//Iniital infectious
+        R[i+1]=randomSequenceR[i];//Initial recovered
+        
+
+    }
+    // I[1]=15;
+    // I[2]=16;
+    // I[3]=18;
+    // I[4]=28;
+    // I[5]=10;
+    // I[6]=34;
+    // I[7]=31;
+    // I[8]=25;
+    // I[9]=30;
+    // I[10]=57;
+    // I[11]=14;
 
     GLOBAL.PIH[1]=0.157089967;
     GLOBAL.PIH[2]=0.118807849;
@@ -324,23 +385,32 @@ void init_states(vector<double>& y0){
     for(int i=1;i<=Nodes;i++)
     {
         if(!SEED_INFECTION_FROM_FILE){
-        GLOBAL.R0[i]=4+drand48();
+        GLOBAL.R0[i]=0.9+0.1*drand48();
         GLOBAL.muM[i]=1/16.0;//---------vector death rate
         }
         GLOBAL.Qv[i]=GLOBAL.muM[i]+GLOBAL.sigM;
         GLOBAL.PIM[i]=GLOBAL.R0[i]*GLOBAL.R0[i]*GLOBAL.muM[i]*GLOBAL.muM[i]*GLOBAL.Qv[i]*GLOBAL.Q1*GLOBAL.Q2*GLOBAL.PIH[i]/(GLOBAL.b*GLOBAL.bet1*GLOBAL.bet2*GLOBAL.sigM*GLOBAL.sigH*GLOBAL.muH);
 
-        y0[i]=GLOBAL.PIM[i]*0.4/GLOBAL.muM[i];//Susceptible Mosquitoes
+        y0[i]=GLOBAL.PIM[i]*0.2/GLOBAL.muM[i];//Susceptible Mosquitoes
         y0[Nodes+i]=GLOBAL.PIM[i]*0.03/GLOBAL.muM[i];//latent Mosquitoes
-        y0[2*Nodes+i]=GLOBAL.PIM[i]*0.57/GLOBAL.muM[i];//Infectious Mosquitoes
+        y0[2*Nodes+i]=GLOBAL.PIM[i]*0.01/GLOBAL.muM[i];//Infectious Mosquitoes
 
-        y0[3*Nodes+i]=GLOBAL.PIH[i]*.3/GLOBAL.muH-2*I[i]-1;//Susceptible Humans
-        y0[4*Nodes+i]=2*I[i];//Latent humans
+        y0[3*Nodes+i]=GLOBAL.PIH[i]*.1/GLOBAL.muH-E[i]-I[i]-R[i];//Susceptible Humans
+        y0[4*Nodes+i]=E[i];//Latent humans
         y0[5*Nodes+i]=I[i];//Infectious humans
-        y0[6*Nodes+i]=1;//Recovered humans
-
+        y0[6*Nodes+i]=R[i];//Recovered humans
+        // std::cout<<GLOBAL.PIH[i]/GLOBAL.muH-E[i]-I[i]-R[i]<<"\t"<<E[i]<<"\t"<<I[i]<<"\t"<<R[i]<<std::endl;
     }
 
+// double totE=0,totI=0,totR=0;
+//     for(int i=0;i<GLOBAL.Nodes;i++)
+//     {
+//         totE+=E[i];//Initial exposed
+//         totI+=I[i];//Iniital infectious
+//         totR+=R[i+1];//Initial recovered
+//         std::cout<<i+1<<"\t"<<randomSequenceE[i]<<" "<<E[i+1]<<"\t"<<randomSequenceI[i]<<" "<<I[i+1]<<"\t"<<randomSequenceR[i]<<" "<<R[i+1]<<std::endl;
+//     }
+   // std::cout<<totalSumE<<" "<<totE<<"\t"<<totalSumI<<" "<<totI<<"\t"<<totalSumR<<" "<<totR<<std::endl;
 }
 
 void writeMatrixToCSV(matrix<double>& matrix, const std::string& fileName) {
