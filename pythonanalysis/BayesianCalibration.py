@@ -25,14 +25,11 @@ import scipy.stats as stats
 # from calculate_DataModel_rmse import datamodel_Gap
 
 
-output_directory_base0 =  "../outputdir/"#"unshifted_revisedvaccine/"
+output_directory_base =  "../outputdir/"#"unshifted_revisedvaccine/"
 
-os.system('mkdir -p ' + output_directory_base0)
+os.system('mkdir -p ' + output_directory_base)
 
-input_directory = "../InputFiles/Kedah/"#be sure to block this line for full population test
-
-
-ChiCrit=stats.chi2.ppf(1-0.05, df=NUM_DAYS)
+input_directory = "../../InputFiles/Senegal/"#be sure to block this line for full population test
 
     
 #---------Selecting priors sequentially-------------------------
@@ -48,7 +45,10 @@ parameters = Priors(n_Params)
 parameters["START_DAY"]=0#nsd+(nsd-1)*NUM_DAYS
 parameters["output_directory_base"]=output_directory_base
 parameters["input_directory"]=input_directory
-
+#Location profile includs number of cities, network formed between cities and the filename that store the adjacency matrix
+parameters["Nodes"]=47#there are 47 cities in Senegal
+parameters["NetworkName"]="Scalefree"#"Scalefree","Random","SmallWorld"
+parameters["NetworkFileHuman"]="NetworkFileHumanScaleFree.json"#"NetworkFileHumanScaleFree.json","NetworkFileHumanRandom.json","NetworkFileHumanSmallWorld.json"
 #parameters.to_csv(os.path.join(output_directory_base,"prior_parameters_sequential_"+str(nsd)+".csv"))
 
 parameters.to_csv(os.path.join(output_directory_base,"prior_parameters_sequential_"+".csv"))

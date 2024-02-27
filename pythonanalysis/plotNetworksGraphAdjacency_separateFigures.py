@@ -3,8 +3,8 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 
-input_dir = "../InputFiles/Senegal/"
-output_directory_base0 = "../outputdir/"
+input_dir = "../../InputFiles/Senegal/"
+output_directory_base0 = "../../outputdir/"
 
 networktypes_Senegal = ["SmallWorld", "Random", "ScaleFree"]
 NetworkFiles = ["NetworkFileHuman" + x for x in networktypes_Senegal]

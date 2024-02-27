@@ -38,27 +38,27 @@ def Priors(nParams):
     maxValues={}
 
 #------------------Beta: home, school, work, community------------------------#
-    minValues['BETA_SCALE']=1;
-    maxValues['BETA_SCALE']=9;
+    minValues['bet1']=0.
+    maxValues['bet1']=0.01
     
-    minValues['BETA_H']=0.0001;
-    maxValues['BETA_H']=1;#9
-    
-    minValues["BETA_RANDOM_COMMUNITY"]=0.0001;#BETA_NBR_CELLS
-    maxValues["BETA_RANDOM_COMMUNITY"]=1;#BETA_NBR_CELLS
-    
-    minValues["BETA_W"]=0.0001
-    maxValues["BETA_W"]=1
-    
-    minValues["BETA_S"]=0.001;
-    maxValues["BETA_S"]=1.5
-    
-    minValues["BETA_C"]=0.001
-    maxValues["BETA_C"]=1
+    minValues['bet2']=0.
+    maxValues['bet2']=0.02#9
 
 
+    minValues['muV']=0.06
+    maxValues['muV']=0.07#9
+
+    minValues["Exposed"]=50
+    maxValues["Exposed"]=100
+
+    minValues["InitialInfections"]=50
+    maxValues["InitialInfections"]=100
+
+    minValues["Recovered"]=50
+    maxValues["Recovered"]=100
+    print(minValues)
 #-----------------------------------------------------------------------------#
-    rangeParam={};
+    rangeParam={}
     for ld in minValues:
         rangeParam[ld]=maxValues[ld]-minValues[ld]
     
@@ -67,21 +67,17 @@ def Priors(nParams):
 #-----------------------------------------------------------------------------#
     np.random.seed(2)#fixing  
     
-
     paraLHS=lhs(len(minValues), samples=nParams, criterion='corr');#to use the correlation feature, the dimension of the matrix should be more than 1.
-    
-    print(len(minValues))
+    # paraLHS=lhs(2, samples=2, criterion='corr');#to use the correlation feature, the dimension of the matrix should be more than 1.
     
 #-----------------------------------------------------------------------------#
     
     
-    i=0;
+    i=0
     VarParamsLHS=pd.DataFrame()
     for ld in minValues:
         VarParamsLHS[ld]=minValues[ld]+rangeParam[ld]*paraLHS[:,i]
         i=i+1
-    VarParamsLHS['PROVIDE_INITIAL_SEED_GRAPH']=random.sample(range(1, nParams+1), nParams)
-    VarParamsLHS['PROVIDE_INITIAL_SEED']=random.sample(range(1, nParams+1), nParams)
 
     return VarParamsLHS
 #-----------------------------------------------------------------------------#
