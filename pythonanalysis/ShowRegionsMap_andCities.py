@@ -37,7 +37,7 @@ print(senegal_regions.columns)
 
 # Plot the regions
 fig, ax = plt.subplots(figsize=(10, 10))
-senegal_regions.plot(ax=ax, color='lightblue', edgecolor='black')
+senegal_regions.plot(ax=ax, cmap='Set3', edgecolor='black')
 
 # Plot the city centroids
 for node, centroid in city_centroids.items():
